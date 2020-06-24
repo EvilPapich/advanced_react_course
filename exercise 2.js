@@ -37,6 +37,7 @@ const autocompleteObjectNode = (origin) => {
                   if (!obj[prop]
                       && typeof prop !== "symbol"
                       && prop !== "inspect"
+                      && prop !== "toJSON"
                   ) {
                       //console.log("getting prop not exist");
                       const item = findValueByPath(origin, path);
@@ -67,3 +68,11 @@ const proxiedObj = autocompleteObjectNode(obj);
 proxiedObj.third.fourty.fifty = "110";
 
 console.log("result", proxiedObj);
+
+const strigifiedProxiedObj = JSON.stringify(proxiedObj);
+
+console.log("stringify", strigifiedProxiedObj, typeof strigifiedProxiedObj);
+
+const parsedProxiedObj = JSON.parse(strigifiedProxiedObj);
+
+console.log("parse", parsedProxiedObj, typeof parsedProxiedObj);
