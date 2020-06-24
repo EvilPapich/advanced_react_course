@@ -31,6 +31,23 @@ const getLazy = (obj) => {
                                 return count-- ? iterator.next() : { done: true }
                             }
                         });
+                    case 'filter':
+                        return predicate => getLazy({
+                            [Symbol.iterator]() { return this },
+                            index: 0,
+                            next() {
+                                const { value, done } = iterator.next();
+                                if (done) {
+                                    return { done }
+                                } else {
+                                    if (predicate(value, this.index++)) {
+                                        return { done, value: value }
+                                    } else {
+                                        return this.next();
+                                    }
+                                }
+                            }
+                        });
                     default:
                         return Reflect.get(...arguments)
                 }
@@ -59,4 +76,13 @@ const endlessIterator = {
         return { value: this.value++, done: false }
     }
 };
-console.log(...getLazy(endlessIterator).map(x => x ** 2).take(10));
+console.log(
+    ...(
+        getLazy(endlessIterator)
+            .map(x => x ** 2)
+            .filter((item) => {
+                return item%3 === 0;
+            })
+            .take(10)
+    )
+);
