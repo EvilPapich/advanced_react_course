@@ -11,7 +11,18 @@ const getLazy = (obj) => {
         {
             get(_, prop) {
                 switch (prop) {
-                    case 'map':
+                    case 'map': //GENERATOR
+                        return predicate => getLazy({
+                            index: 0,
+                            *[Symbol.iterator]() {
+                                let { value, done } = iterator.next();
+                                while(!done) {
+                                    yield predicate(value, this.index++);
+                                    ({ value, done } = iterator.next());
+                                }
+                            }
+                        });
+                    /*case 'map': //ITERATOR
                         return predicate => getLazy({
                             [Symbol.iterator]() { return this },
                             index: 0,
@@ -23,15 +34,35 @@ const getLazy = (obj) => {
                                     return { done, value: predicate(value, this.index++) }
                                 }
                             }
+                        });*/
+                    case 'take': //GENERATOR
+                        return (count) => getLazy({
+                            *[Symbol.iterator]() {
+                                while(count--) {
+                                    yield iterator.next().value;
+                                }
+                            }
                         });
-                    case 'take':
+                    /*case 'take': //ITERATOR
                         return (count) => getLazy({
                             [Symbol.iterator]() { return this },
                             next() {
                                 return count-- ? iterator.next() : { done: true }
                             }
+                        });*/
+                    case 'filter': //GENERATOR
+                        return predicate => getLazy({
+                            *[Symbol.iterator]() {
+                                let { value, done } = iterator.next();
+                                while(!done) {
+                                    if (predicate(value, this.index++)) {
+                                        yield value;
+                                    }
+                                    ({ value, done } = iterator.next());
+                                }
+                            }
                         });
-                    case 'filter':
+                    /*case 'filter': //ITERATOR
                         return predicate => getLazy({
                             [Symbol.iterator]() { return this },
                             index: 0,
@@ -47,7 +78,7 @@ const getLazy = (obj) => {
                                     }
                                 }
                             }
-                        });
+                        });*/
                     default:
                         return Reflect.get(...arguments)
                 }
