@@ -50,6 +50,7 @@ class InputWordOne extends React.Component {
                         onChange={(event) => {
                             context.setWordOne(event.target.value);
                         }}
+                        style={this.props.style}
                     />
                 )}
             </WordContextConsumer>
@@ -69,6 +70,7 @@ class InputWordTwo extends React.Component {
                         onChange={(event) => {
                             context.setWordTwo(event.target.value);
                         }}
+                        style={this.props.style}
                     />
                 )}
             </WordContextConsumer>
@@ -87,6 +89,7 @@ class MixWords extends React.Component {
                         onClick={() => {
                             context.mixWords();
                         }}
+                        style={this.props.style}
                     />
                 )}
             </WordContextConsumer>
@@ -104,6 +107,7 @@ class HybridWord extends React.Component {
                         placeholder={"новое слово"}
                         value={context.hybridWord}
                         onChange={()=>{}}
+                        style={this.props.style}
                     />
                 )}
             </WordContextConsumer>
@@ -111,24 +115,45 @@ class HybridWord extends React.Component {
     }
 }
 
+function withStyle(WrappedComponent, style) {
+    return class extends React.Component {
+        render() {
+            return (
+                <WrappedComponent style={style} {...this.props}/>
+            );
+        }
+    }
+}
+
+const styleForInputs = {
+    border: "1px solid #444",
+    borderRadius: "5px",
+    marginBottom: "20px"
+};
+
+const InputWordOneWithStyle = withStyle(InputWordOne, styleForInputs);
+const InputWordTwoWithStyle = withStyle(InputWordTwo, styleForInputs);
+const MixWordsWithStyle = withStyle(MixWords, styleForInputs);
+const HybridWordWithStyle = withStyle(HybridWord, styleForInputs);
+
 class App extends React.Component {
     render() {
         return (
             <div className="App"
-                 style={{display: "flex",flexDirection: "column",flex: 1,width: "50%",margin: "0 auto"}}
+                 style={{display: "flex",flexDirection: "column",flex: 1,width: "50%",margin: "0 auto",padding: "10%"}}
             >
                 <WordContextProvider>
                     <div style={{display: "flex",flexDirection: "row",flex: 1,justifyContent: "space-between"}}
                     >
-                        <InputWordOne/>
+                        <InputWordOneWithStyle/>
                         {"+"}
-                        <InputWordTwo/>
+                        <InputWordTwoWithStyle/>
                     </div>
                     <div>
-                        <MixWords/>
+                        <MixWordsWithStyle/>
                     </div>
                     <div>
-                        <HybridWord/>
+                        <HybridWordWithStyle/>
                     </div>
                 </WordContextProvider>
             </div>
