@@ -1,119 +1,101 @@
 import React from 'react';
 import './App.css';
-const {Provider, Consumer: WordContextConsumer} = React.createContext();
+import {action, configure, decorate, observable} from "mobx";
+import {observer} from "mobx-react";
 
-class WordContextProvider extends React.Component {
-    state = {
-        wordOne: "кетчуп",
-        wordTwo: "майонез",
-        hybridWord: "",
-    };
+configure({enforceActions: "observed"});
 
-    mixWords = () => {
-        const {
-            wordOne,
-            wordTwo,
-        } = this.state;
+class WordStore {
+    wordOne = "кетчуп";
+    wordTwo = "майонез";
+    hybridWord = "";
 
-        this.setState({
-            hybridWord:
-                `${wordOne.length>3 ? wordOne.substring(0, Math.floor(wordOne.length/2)) : wordOne
-                    }${wordTwo.length>3 ? wordTwo.substring(Math.floor(wordTwo.length/2)) : wordTwo}`
-        });
-    };
+    setWordOne(value) {
+        this.wordOne = value;
+    }
 
-    render() {
-        return (
-            <Provider value={{
-                wordOne: this.state.wordOne,
-                setWordOne: (value) => this.setState({wordOne: value}),
-                wordTwo: this.state.wordTwo,
-                setWordTwo: (value) => this.setState({wordTwo: value}),
-                mixWords: () => this.mixWords(),
-                hybridWord: this.state.hybridWord,
-            }}>
-                {this.props.children}
-            </Provider>
-        );
+    setWordTwo(value) {
+        this.wordTwo = value;
+    }
+
+    mixWords() {
+        this.hybridWord =
+            `${this.wordOne.length>3 ? this.wordOne.substring(0, Math.floor(this.wordOne.length/2)) : this.wordOne
+            }${this.wordTwo.length>3 ? this.wordTwo.substring(Math.floor(this.wordTwo.length/2)) : this.wordTwo}`;
     }
 }
+decorate(WordStore, {
+    wordOne: observable,
+    wordTwo: observable,
+    hybridWord: observable,
 
-class InputWordOne extends React.Component {
-    render() {
-        return(
-            <WordContextConsumer>
-                {context => (
-                    <input
-                        type={"text"}
-                        placeholder={"первое слово"}
-                        value={context.wordOne}
-                        onChange={(event) => {
-                            context.setWordOne(event.target.value);
-                        }}
-                        style={this.props.style}
-                    />
-                )}
-            </WordContextConsumer>
-        );
-    }
-}
+    setWordOne: action,
+    setWordTwo: action,
+    mixWords: action,
+});
 
-class InputWordTwo extends React.Component {
-    render() {
-        return(
-            <WordContextConsumer>
-                {context => (
-                    <input
-                        type={"text"}
-                        placeholder={"второе слово"}
-                        value={context.wordTwo}
-                        onChange={(event) => {
-                            context.setWordTwo(event.target.value);
-                        }}
-                        style={this.props.style}
-                    />
-                )}
-            </WordContextConsumer>
-        );
-    }
-}
+const wordStore = new WordStore();
 
-class MixWords extends React.Component {
-    render() {
-        return(
-            <WordContextConsumer>
-                {context => (
-                    <input
-                        type={"button"}
-                        value={"смешать"}
-                        onClick={() => {
-                            context.mixWords();
-                        }}
-                        style={this.props.style}
-                    />
-                )}
-            </WordContextConsumer>
-        );
-    }
-}
+const InputWordOne = observer(({style}) => {
+    console.log("InputWordOne");
 
-class HybridWord extends React.Component {
-    render() {
-        return(
-            <WordContextConsumer>
-                {context => (
-                    <input
-                        type={"input"}
-                        placeholder={"новое слово"}
-                        value={context.hybridWord}
-                        onChange={()=>{}}
-                        style={this.props.style}
-                    />
-                )}
-            </WordContextConsumer>
-        );
-    }
-}
+    return(
+        <input
+            type={"text"}
+            placeholder={"первое слово"}
+            value={wordStore.wordOne}
+            onChange={(event) => {
+                wordStore.setWordOne(event.target.value);
+            }}
+            style={style}
+        />
+    );
+});
+
+const InputWordTwo = observer(({style}) => {
+    console.log("InputWordTwo");
+
+    return(
+        <input
+            type={"text"}
+            placeholder={"второе слово"}
+            value={wordStore.wordTwo}
+            onChange={(event) => {
+                wordStore.setWordTwo(event.target.value);
+            }}
+            style={style}
+        />
+    );
+});
+
+const MixWords = observer(({style}) => {
+    console.log("MixWords");
+
+    return(
+        <input
+            type={"button"}
+            value={"смешать"}
+            onClick={() => {
+                wordStore.mixWords();
+            }}
+            style={style}
+        />
+    );
+});
+
+const HybridWord = observer(({style}) => {
+    console.log("HybridWord");
+
+    return(
+        <input
+            type={"input"}
+            placeholder={"новое слово"}
+            value={wordStore.hybridWord}
+            onChange={()=>{}}
+            style={style}
+        />
+    );
+});
 
 function withStyle(WrappedComponent, style) {
     return class extends React.Component {
@@ -142,20 +124,18 @@ class App extends React.Component {
             <div className="App"
                  style={{display: "flex",flexDirection: "column",flex: 1,width: "50%",margin: "0 auto",padding: "10%"}}
             >
-                <WordContextProvider>
-                    <div style={{display: "flex",flexDirection: "row",flex: 1,justifyContent: "space-between"}}
-                    >
-                        <InputWordOneWithStyle/>
-                        {"+"}
-                        <InputWordTwoWithStyle/>
-                    </div>
-                    <div>
-                        <MixWordsWithStyle/>
-                    </div>
-                    <div>
-                        <HybridWordWithStyle/>
-                    </div>
-                </WordContextProvider>
+                <div style={{display: "flex",flexDirection: "row",flex: 1,justifyContent: "space-between"}}
+                >
+                    <InputWordOneWithStyle/>
+                    {"+"}
+                    <InputWordTwoWithStyle/>
+                </div>
+                <div>
+                    <MixWordsWithStyle/>
+                </div>
+                <div>
+                    <HybridWordWithStyle/>
+                </div>
             </div>
         );
     }
