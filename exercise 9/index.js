@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Hello from "./src/Hello";
+import Hello from "./src/Components/Hello/Hello";
 
 const rootElement = document.getElementById("root");
 
