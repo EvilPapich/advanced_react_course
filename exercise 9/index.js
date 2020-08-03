@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-const Hello = () => <h1>Hello, Webpack!!!</h1>;
+import Hello from "./src/Hello";
 
 const rootElement = document.getElementById("root");
 
-ReactDOM.render(<Hello/>, rootElement);
+ReactDOM.render(<Hello name={"Typescript"}/>, rootElement);
