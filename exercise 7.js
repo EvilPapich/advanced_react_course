@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import {action, computed, configure, decorate, observable} from "mobx";
-import {observer} from "mobx-react";
+import {inject, observer, Provider} from "mobx-react";
 
 configure({enforceActions: "observed"});
 
@@ -40,37 +40,37 @@ decorate(WordStore, {
 
 const wordStore = new WordStore();
 
-const InputWordOne = observer(({style}) => {
+const InputWordOne = inject("word")(observer(({word, style}) => {
     console.log("InputWordOne");
 
     return(
         <input
             type={"text"}
             placeholder={"первое слово"}
-            value={wordStore.wordOne}
+            value={word.wordOne}
             onChange={(event) => {
-                wordStore.setWordOne(event.target.value);
+                word.setWordOne(event.target.value);
             }}
             style={style}
         />
     );
-});
+}));
 
-const InputWordTwo = observer(({style}) => {
+const InputWordTwo = inject("word")(observer(({word, style}) => {
     console.log("InputWordTwo");
 
     return(
         <input
             type={"text"}
             placeholder={"второе слово"}
-            value={wordStore.wordTwo}
+            value={word.wordTwo}
             onChange={(event) => {
-                wordStore.setWordTwo(event.target.value);
+                word.setWordTwo(event.target.value);
             }}
             style={style}
         />
     );
-});
+}));
 
 const MixWords = observer(({style}) => {
     console.log("MixWords");
@@ -88,19 +88,19 @@ const MixWords = observer(({style}) => {
     );
 });
 
-const HybridWord = observer(({style}) => {
+const HybridWord = inject("word")(observer(({word, style}) => {
     console.log("HybridWord");
 
     return(
         <input
             type={"input"}
             placeholder={"новое слово"}
-            value={wordStore.hybridWord}
+            value={word.hybridWord}
             onChange={()=>{}}
             style={style}
         />
     );
-});
+}));
 
 function withStyle(WrappedComponent, style) {
     return class extends React.Component {
@@ -126,22 +126,24 @@ const HybridWordWithStyle = withStyle(HybridWord, styleForInputs);
 class App extends React.Component {
     render() {
         return (
-            <div className="App"
-                 style={{display: "flex",flexDirection: "column",flex: 1,width: "50%",margin: "0 auto",padding: "10%"}}
-            >
-                <div style={{display: "flex",flexDirection: "row",flex: 1,justifyContent: "space-between"}}
+            <Provider word={wordStore}>
+                <div className="App"
+                     style={{display: "flex",flexDirection: "column",flex: 1,width: "50%",margin: "0 auto",padding: "10%"}}
                 >
-                    <InputWordOneWithStyle/>
-                    {"+"}
-                    <InputWordTwoWithStyle/>
+                    <div style={{display: "flex",flexDirection: "row",flex: 1,justifyContent: "space-between"}}
+                    >
+                        <InputWordOneWithStyle/>
+                        {"+"}
+                        <InputWordTwoWithStyle/>
+                    </div>
+                    <div>
+                        <MixWordsWithStyle/>
+                    </div>
+                    <div>
+                        <HybridWordWithStyle/>
+                    </div>
                 </div>
-                <div>
-                    <MixWordsWithStyle/>
-                </div>
-                <div>
-                    <HybridWordWithStyle/>
-                </div>
-            </div>
+            </Provider>
         );
     }
 }
