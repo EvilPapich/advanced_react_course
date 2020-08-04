@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import {action, configure, decorate, observable} from "mobx";
+import {action, computed, configure, decorate, observable} from "mobx";
 import {observer} from "mobx-react";
 
 configure({enforceActions: "observed"});
@@ -8,7 +8,11 @@ configure({enforceActions: "observed"});
 class WordStore {
     wordOne = "кетчуп";
     wordTwo = "майонез";
-    hybridWord = "";
+    //hybridWord = "";
+    get hybridWord() {
+        return `${this.wordOne.length>3 ? this.wordOne.substring(0, Math.floor(this.wordOne.length/2)) : this.wordOne
+            }${this.wordTwo.length>3 ? this.wordTwo.substring(Math.floor(this.wordTwo.length/2)) : this.wordTwo}`;
+    }
 
     setWordOne(value) {
         this.wordOne = value;
@@ -18,20 +22,20 @@ class WordStore {
         this.wordTwo = value;
     }
 
-    mixWords() {
-        this.hybridWord =
-            `${this.wordOne.length>3 ? this.wordOne.substring(0, Math.floor(this.wordOne.length/2)) : this.wordOne
-            }${this.wordTwo.length>3 ? this.wordTwo.substring(Math.floor(this.wordTwo.length/2)) : this.wordTwo}`;
-    }
+    /*mixWords() {
+      this.hybridWord =
+        `${this.wordOne.length>3 ? this.wordOne.substring(0, Math.floor(this.wordOne.length/2)) : this.wordOne
+          }${this.wordTwo.length>3 ? this.wordTwo.substring(Math.floor(this.wordTwo.length/2)) : this.wordTwo}`;
+    }*/
 }
 decorate(WordStore, {
     wordOne: observable,
     wordTwo: observable,
-    hybridWord: observable,
+    hybridWord: computed,
 
     setWordOne: action,
     setWordTwo: action,
-    mixWords: action,
+    //mixWords: action,
 });
 
 const wordStore = new WordStore();
@@ -74,9 +78,10 @@ const MixWords = observer(({style}) => {
     return(
         <input
             type={"button"}
-            value={"смешать"}
+            value={"авто-смешивание"}
+            disabled={true}
             onClick={() => {
-                wordStore.mixWords();
+                //wordStore.mixWords();
             }}
             style={style}
         />
