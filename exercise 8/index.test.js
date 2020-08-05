@@ -1,6 +1,6 @@
 import React from "react";
 import {default as Enzyme, shallow, mount} from "enzyme";
-import {InputWordOne} from "./index";
+import {HybridWord, InputWordOne, wordStore} from "./index";
 import Adapter from 'enzyme-adapter-react-16';
 import 'mobx-react-lite/batchingForReactDom';
 
@@ -10,10 +10,7 @@ describe("Test", () => {
     const mock = {
         wordOne: "кетчуп",
         wordTwo: "майонез",
-        get hybridWord() {
-            return `${this.wordOne.length>3 ? this.wordOne.substring(0, Math.floor(this.wordOne.length/2)) : this.wordOne
-                }${this.wordTwo.length>3 ? this.wordTwo.substring(Math.floor(this.wordTwo.length/2)) : this.wordTwo}`;
-        },
+        get hybridWord() { return wordStore.mixWords(this.wordOne, this.wordTwo); },
         setWordOne: jest.fn(),
         setWordTwo: jest.fn(),
     };
@@ -37,7 +34,7 @@ describe("Test", () => {
                 wrapper.find('input').props().value
             ).toEqual(
                 mock.wordOne
-            )
+            );
         });
 
         test("onchange called store func", () => {
@@ -47,7 +44,31 @@ describe("Test", () => {
                 mock.setWordOne
             ).toHaveBeenCalledWith(
                 "text"
-            )
+            );
         });
-    })
+    });
+
+    describe("HybridWord", () => {
+        let wrapper, component;
+
+        beforeEach(() => {
+            wrapper = mount(
+                <HybridWord
+                    word={mock}
+                    style={{}}
+                />
+            );
+
+            component = wrapper.instance();
+        });
+
+        test("correct mixing words", () => {
+            expect(
+                wrapper.find('input').props().value
+            ).toEqual(
+                `${mock.wordOne.length>3 ? mock.wordOne.substring(0, Math.floor(mock.wordOne.length/2)) : mock.wordOne
+                    }${mock.wordTwo.length>3 ? mock.wordTwo.substring(Math.floor(mock.wordTwo.length/2)) : mock.wordTwo}`
+            );
+        });
+    });
 });

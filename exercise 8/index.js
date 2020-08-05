@@ -9,8 +9,7 @@ class WordStore {
     wordTwo = "майонез";
     //hybridWord = "";
     get hybridWord() {
-        return `${this.wordOne.length>3 ? this.wordOne.substring(0, Math.floor(this.wordOne.length/2)) : this.wordOne
-            }${this.wordTwo.length>3 ? this.wordTwo.substring(Math.floor(this.wordTwo.length/2)) : this.wordTwo}`;
+        return this.mixWords(this.wordOne, this.wordTwo);
     }
 
     setWordOne(value) {
@@ -21,11 +20,10 @@ class WordStore {
         this.wordTwo = value;
     }
 
-    /*mixWords() {
-      this.hybridWord =
-        `${this.wordOne.length>3 ? this.wordOne.substring(0, Math.floor(this.wordOne.length/2)) : this.wordOne
-          }${this.wordTwo.length>3 ? this.wordTwo.substring(Math.floor(this.wordTwo.length/2)) : this.wordTwo}`;
-    }*/
+    mixWords = (wordOne, wordTwo) => {
+      return `${wordOne.length>3 ? wordOne.substring(0, Math.floor(wordOne.length/2)) : wordOne
+          }${wordTwo.length>3 ? wordTwo.substring(Math.floor(wordTwo.length/2)) : wordTwo}`;
+    }
 }
 decorate(WordStore, {
     wordOne: observable,
@@ -34,10 +32,9 @@ decorate(WordStore, {
 
     setWordOne: action,
     setWordTwo: action,
-    //mixWords: action,
 });
 
-const wordStore = new WordStore();
+export const wordStore = new WordStore();
 
 export const InputWordOne = inject("word")(observer(({word, style}) => {
     console.log("InputWordOne");
@@ -87,7 +84,7 @@ const MixWords = observer(({style}) => {
     );
 });
 
-const HybridWord = inject("word")(observer(({word, style}) => {
+export const HybridWord = inject("word")(observer(({word, style}) => {
     console.log("HybridWord");
 
     return(
