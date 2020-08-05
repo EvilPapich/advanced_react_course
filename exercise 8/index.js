@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import {action, computed, configure, decorate, observable} from "mobx";
 import {inject, observer, Provider} from "mobx-react";
 
@@ -40,7 +39,7 @@ decorate(WordStore, {
 
 const wordStore = new WordStore();
 
-const InputWordOne = inject("word")(observer(({word, style}) => {
+export const InputWordOne = inject("word")(observer(({word, style}) => {
     console.log("InputWordOne");
 
     return(
