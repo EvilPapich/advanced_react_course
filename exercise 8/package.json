@@ -1,0 +1,25 @@
+{
+  "name": "exercise-8",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "echo \"Error: no build specified\" && exit 1",
+    "start": "echo \"Error: no start specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mobx": "^5.15.4",
+    "mobx-react": "^6.2.5",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.8",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
+    "jest": "^26.2.2"
+  }
+}
